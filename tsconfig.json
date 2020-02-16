@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2015",
+    "outDir": "lib",
+    "declaration": true,
+    "noImplicitAny": true,
+    "removeComments": false,
+    "preserveConstEnums": false,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "importHelpers": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "files": [
+    "src/index.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

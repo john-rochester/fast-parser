@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2018",
+    "declaration": false,
+    "noImplicitAny": true,
+    "removeComments": false,
+    "preserveConstEnums": false,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "importHelpers": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": [
+    "./*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

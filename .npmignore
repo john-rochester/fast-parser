@@ -1,0 +1,12 @@
+node_modules
+src
+__tests__
+jestconfig.json
+tsconfig.json
+lib/*.d.ts
+!lib/index.d.ts
+coverage
+yarn.lock
+.eslintrc.json
+.vscode
+yarn-error.log

@@ -1,0 +1,19 @@
+define fib(n)
+    a, b = fibn(n)
+    return b
+end
+
+define fibn(n)
+    if n == 0 then
+	return 0, 1
+    else
+	a, b = fibn(n - 1)
+	return b, a + b
+    fi
+end
+
+i = 0
+while i < 10 do
+    'fib(' + i + ') = ' + fib(i)
+    i = i + 1
+od

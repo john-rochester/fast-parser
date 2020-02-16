@@ -1,0 +1,18 @@
+define eimpl(sum, i, limit, term)
+    sum = sum + term
+    if i < limit then
+	return eimpl(sum, i + 1, limit, term / i)
+    else
+	return sum
+    fi
+end
+
+define e(limit)
+    return eimpl(0, 1, limit, 1)
+end
+
+l = 1
+while l < 20 do
+    l + ' terms = ' + e(l)
+    l = l + 1
+od
