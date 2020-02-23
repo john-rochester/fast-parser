@@ -283,18 +283,21 @@ const defaultReplacementFn = (args: any[]) => args
 const singleItemReplacementFn = (args: any[]) => args[0]
 
 export class Sequence implements Matcher {
-    fn: ReplacementFn = defaultReplacementFn
+    fn: ReplacementFn
 
     constructor(public items: Item[], private repl: string) {
     }
 
     actions(actions: Actions) {
         if (this.repl) {
-            let fn = actions.replacements[this.repl]
-            this.fn = fn ? fn : defaultReplacementFn
-        }
-        if (this.fn === defaultReplacementFn && this.keptItemCount() === 1)
+            this.fn = actions.replacements[this.repl]
+            if (!this.fn)
+                throw new Error('missing replacement function \'' + this.repl + '\'')
+        } else if (this.keptItemCount() === 1) {
             this.fn = singleItemReplacementFn
+        } else {
+            this.fn = defaultReplacementFn
+        }
         for (let item of this.items)
             item.actions(actions)
     }
@@ -589,17 +592,16 @@ export class Repeat implements Matcher {
     }
 }
 
-const defaultPredicateFn : PredicateFn = () => null
-
 export class Predicate implements Matcher {
-    private fn = defaultPredicateFn
+    private fn: PredicateFn
 
     constructor(private base: Matcher, private name: string) {
     }
 
     actions(actions: Actions) {
-        let fn = actions.predicates[this.name]
-        this.fn = fn ? fn : defaultPredicateFn
+        this.fn = actions.predicates[this.name]
+        if (!this.fn)
+            throw new Error('missing predicate function \'' + this.name + '\'')
         this.base.actions(actions)
     }
 

@@ -47,7 +47,7 @@ describe('the grammar', () => {
         let res = parse('main = pal pal = word:palindrome word <a word> = /[a-z]+/')
         expect(res.error).toBeNull()
         if (res.grammar) {
-            expect(res.grammar.match('hello')).toEqual({result: {text: 'hello', pos: 0}, error: null})
+            expect(() => res.grammar.match('hello')).toThrow('missing predicate function \'palindrome\'')
             res.grammar.actions({
                 predicates: {
                     palindrome: (word: any, _: any[]): string | null => {
@@ -67,7 +67,7 @@ describe('the grammar', () => {
         let res = parse('main = number number <a number> = /[0-9]+/ %number')
         expect(res.error).toBeNull()
         if (res.grammar) {
-            expect(res.grammar.match('250')).toEqual({result: {text: '250', pos: 0}, error: null})
+            expect(() => res.grammar.match('250')).toThrow('missing replacement function \'number\'')
             res.grammar.actions({
                 replacements: {
                     number: (vals: any[]): number => {
