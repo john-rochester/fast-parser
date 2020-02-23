@@ -1,10 +1,10 @@
 {
   "name": "fast-parser",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A fast parser generator",
+  "author": "John Rochester <devel@jrochester.org>",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "John Rochester",
   "license": "MIT",
   "private": false,
   "repository": {
@@ -27,6 +27,5 @@
   },
   "keywords": [
     "parser generator", "grammar"
-  ],
-  "author": "John Rochester <devel@jrochester.org>"
+  ]
 }
