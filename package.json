@@ -1,6 +1,6 @@
 {
   "name": "fast-parser",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A fast parser generator",
   "author": "John Rochester <devel@jrochester.org>",
   "main": "lib/index.js",
@@ -12,20 +12,21 @@
     "url": "https://github.com/john-rochester/fast-parser.git"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.15",
-    "@types/node": "^12.0.10",
-    "@typescript-eslint/eslint-plugin": "^2.19.2",
-    "@typescript-eslint/parser": "^2.19.2",
-    "eslint": "^6.8.0",
-    "jest": "^24.8.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.5.2"
+    "@types/jest": ">= 24.0.0",
+    "@types/node": ">= 14.0.0",
+    "@typescript-eslint/eslint-plugin": ">= 2.19.2",
+    "@typescript-eslint/parser": ">= 2.19.2",
+    "eslint": ">= 6.8.0",
+    "jest": ">= 24.8.0",
+    "ts-jest": ">= 24.0.2",
+    "typescript": ">= 3.5.2"
   },
   "scripts": {
-    "test": "jest --config jestconfig.json",
-    "eslint": "eslint --fix --ext ts ."
+    "test": "node_modules/.bin/jest --config jestconfig.json",
+    "eslint": "node_modules/.bin/eslint --fix --ext ts ."
   },
   "keywords": [
-    "parser generator", "grammar"
+    "parser generator",
+    "grammar"
   ]
 }
