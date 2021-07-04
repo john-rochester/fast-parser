@@ -45,7 +45,7 @@ describe('the grammar', () => {
     })
 
     it('should correctly handle predicates', () => {
-        const res = parse('main = pal pal = word:palindrome word <a word> = /[a-z]+/')
+        let res = parse('main = pal pal = word:palindrome word <a word> = /[a-z]+/')
         expect(res.error).toBeNull()
         if (res.grammar) {
             expect(() => res.grammar.match('hello')).toThrow('missing predicate function \'palindrome\'')
@@ -72,6 +72,20 @@ describe('the grammar', () => {
             })
             expect(res.grammar.match('axa').error).toMatch(/always fail, line 1/)
         }
+        res = parse('main = word word:same word <a word> = /[a-z]+/')
+        expect(res.error).toBeNull()
+        res.grammar.actions({
+            predicates: {
+                same: (word: Token, context: [Token]): string | null => {
+                    if (word.text !== context[0].text)
+                        return 'the same word'
+                    else
+                        return null
+                }
+            }
+        })
+        expect(res.grammar.match('one one').error).toBeNull()
+        expect(res.grammar.match('one two').error).toMatch(/^expected the same word/)
     })
 
     it('should correctly handle replacements', () => {

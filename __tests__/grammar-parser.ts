@@ -54,7 +54,7 @@ describe('the grammar parser', () => {
     it('should accept a grammar with predicates', () => {
         const res = parse('main .= /[a-z][a-zA-Z0-9]*/:foo')
         expect(res.error).toBeNull()
-        expect(res.grammar.dump()).toEqual('(grammar (rule main (seq (item (predicate foo (regex /[a-z][a-zA-Z0-9]*/y))))))')
+        expect(res.grammar.dump()).toEqual('(grammar (rule main (seq (item pred foo (regex /[a-z][a-zA-Z0-9]*/y)))))')
     })
 
     it('should accept a grammar with wildcards', () => {

@@ -51,6 +51,7 @@ function parseMatcher(l: Lexer, skipWS: boolean, grammar: g.Grammar): g.Matcher 
 function parseItem(l: Lexer, skipWS: boolean, grammar: g.Grammar) {
     let t = l.next()
     let keep = undefined
+    let predicate = null
     if (t.type === TokenType.CHAR) {
         switch (t.value) {
         case '!':
@@ -91,11 +92,11 @@ function parseItem(l: Lexer, skipWS: boolean, grammar: g.Grammar) {
                 l.error('expected predicate name', t)
                 return null
             }
-            matcher = new g.Predicate(matcher, t.value)
+            predicate = t.value
         } else {
             l.pushBack(t)
         }
-        return new g.Item(matcher, keep)
+        return new g.Item(matcher, predicate, keep)
     }
     return null
 }

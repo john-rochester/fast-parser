@@ -308,12 +308,22 @@ export class Sequence implements Matcher {
 
     match(src: Source) {
         const res = []
-        const opos = src.pos
+        const seqPos = src.pos
         for (const item of this.items) {
+            const pos = src.pos
             const m = item.matcher.match(src)
             if (m == noMatch) {
-                src.pos = opos
+                src.pos = seqPos
                 return noMatch
+            }
+            if (item.fn) {
+                const err = item.fn(m, res)
+                if (err) {
+                    src.pos = pos
+                    src.error(err)
+                    src.pos = seqPos
+                    return noMatch
+                }
             }
             if (item.keep)
                 res.push(m)
@@ -370,10 +380,17 @@ export class Sequence implements Matcher {
 }
 
 export class Item {
-    constructor(public matcher: Matcher, public keep = matcher.keep()) {
+    public fn: PredicateFn
+
+    constructor(public matcher: Matcher, private predicateName: string | null, public keep = matcher.keep()) {
     }
 
     actions(actions: Actions) {
+        if (this.predicateName) {
+            this.fn = actions.predicates[this.predicateName]
+            if (!this.fn)
+                throw new Error('missing predicate function \'' + this.predicateName + '\'')
+        }
         this.matcher.actions(actions)
     }
 
@@ -385,6 +402,8 @@ export class Item {
             else
                 s += ' skip'
         }
+        if (this.predicateName)
+            s += ' pred ' + this.predicateName
         s += this.matcher.dump()
         return s + ')'
     }
@@ -589,55 +608,6 @@ export class Repeat implements Matcher {
 
     hasEmptyRepeat() {
         return this.base.canMatchNothing() !== MatchesNothing.NO
-    }
-}
-
-export class Predicate implements Matcher {
-    private fn: PredicateFn
-
-    constructor(private base: Matcher, private name: string) {
-    }
-
-    actions(actions: Actions) {
-        this.fn = actions.predicates[this.name]
-        if (!this.fn)
-            throw new Error('missing predicate function \'' + this.name + '\'')
-        this.base.actions(actions)
-    }
-
-    match(src: Source) {
-        const pos = src.pos
-        const m = this.base.match(src)
-        if (m !== noMatch) {
-            const err = this.fn(m, [])
-            if (err) {
-                src.pos = pos
-                src.error(err)
-                return noMatch
-            }
-            return m
-        }
-        return noMatch
-    }
-
-    keep() {
-        return this.base.keep()
-    }
-
-    dump() {
-        return ' (predicate ' + this.name + this.base.dump() + ')'
-    }
-
-    leftReferences(rules: SymbolSet, failures: string[]) {
-        return this.base.leftReferences(rules, failures)
-    }
-
-    canMatchNothing() : MatchesNothing {
-        return this.base.canMatchNothing()
-    }
-
-    hasEmptyRepeat() {
-        return this.base.hasEmptyRepeat()
     }
 }
 

@@ -144,7 +144,7 @@ interface Token {
   * `?` (question mark) matches 0 or 1 times.
   The value of the item will be an array containing all the matches.
 
-  An item may then also be followed by `:name`, which names a predicate from the actions object. That predicate will be called with the value of the item. If it returns `null` the match will continue, otherwise it will return a string indicating a syntax error. The string `x` will be formatted into `expected x`, so choose the return value accordingly.
+  An item may then also be followed by `:name`, which names a predicate from the actions object. That predicate will be called with the value of the item and an array of the previous values in the sequence. If it returns `null` the match will continue, otherwise it will return a string indicating a syntax error. The string `x` will be formatted into `expected x`, so choose the return value accordingly. Another possible return type is an object that implements the `PredicateFailure` interface which lets it have complete control over the error message.
 
 Sequences naturally have a value which is an array of all the values of the *interesting* items in them.
 Literal strings are uninteresting, but may be made interesting by preceding them with `!`, i.e. `!'name'` contributes a value to its sequence.
