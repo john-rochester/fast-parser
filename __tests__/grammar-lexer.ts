@@ -2,39 +2,39 @@ import { Lexer, TokenType } from '../src/grammar-lexer'
 
 describe('the lexer', () => {
     it('should produce an EOF token from an empty string', () => {
-        let l = new Lexer('')
+        const l = new Lexer('')
         expect(l.next().type).toEqual(TokenType.EOF)
     })
 
     it('should recognise a symbol', () => {
-        let l = new Lexer('aSymbol1')
-        let t = l.next()
+        const l = new Lexer('aSymbol1')
+        const t = l.next()
         expect(t.type).toEqual(TokenType.SYMBOL)
         expect(t.value).toEqual('aSymbol1')
         expect(l.next().type).toEqual(TokenType.EOF)
     })
 
     it('should recognise quoted text', () => {
-        let l = new Lexer('\'something\\\'\\n\'')
-        let t = l.next()
+        const l = new Lexer('\'something\\\'\\n\'')
+        const t = l.next()
         expect(t.type).toEqual(TokenType.TEXT)
         expect(t.value).toEqual('something\'\n')
         expect(l.next().type).toEqual(TokenType.EOF)
     })
 
     it('should recognise a regex', () => {
-        let l = new Lexer('/([a-z]+)\\/\\n/')
-        let t = l.next()
+        const l = new Lexer('/([a-z]+)\\/\\n/')
+        const t = l.next()
         expect(t.type).toEqual(TokenType.REGEX)
         expect(t.value).toEqual('(?:[a-z]+)\\/\\n')
         expect(l.next().type).toEqual(TokenType.EOF)
     })
 
     it('should recognise a sequence of all token types', () => {
-        let l = new Lexer('symbol <a thing> .= /([a-z]+)\\/\\n/\nand \'foo\\\'\' but \'bar\\n\'')
-        let types = [], values = []
+        const l = new Lexer('symbol <a thing> .= /([a-z]+)\\/\\n/\nand \'foo\\\'\' but \'bar\\n\'')
+        const types = [], values = []
         for (;;) {
-            let t = l.next()
+            const t = l.next()
             if (t.type == TokenType.EOF)
                 break
             types.push(t.type)
@@ -51,9 +51,9 @@ describe('the lexer', () => {
     })
 
     it('should handle pushbacks properly', () => {
-        let l = new Lexer('sym1 sym2')
-        let s1 = l.next()
-        let s2 = l.next()
+        const l = new Lexer('sym1 sym2')
+        const s1 = l.next()
+        const s2 = l.next()
         l.pushBack(s2)
         l.pushBack(s1)
         expect(l.next()).toEqual({type: TokenType.SYMBOL, value: 'sym1', position: 0})
@@ -62,13 +62,13 @@ describe('the lexer', () => {
     })
 
     it('should allow peeking at the next token', () => {
-        let l = new Lexer('sym1')
+        const l = new Lexer('sym1')
         expect(l.peek()).toEqual({type: TokenType.SYMBOL, value: 'sym1', position: 0})
         expect(l.next()).toEqual({type: TokenType.SYMBOL, value: 'sym1', position: 0})
     })
 
     it('should return EOF forever after an error has occurred', () => {
-        let l = new Lexer('sym1\nsym2 sym3 sym4')
+        const l = new Lexer('sym1\nsym2 sym3 sym4')
         l.next()
         let t = l.next()
         t = l.next()

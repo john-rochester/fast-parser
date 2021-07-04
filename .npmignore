@@ -10,3 +10,7 @@ yarn.lock
 .eslintrc.json
 .vscode
 yarn-error.log
+.git
+.gitignore
+.yarn
+.yarnrc

@@ -1,5 +1,5 @@
 import { errorMessage } from './grammar-lexer'
-import { Parser, ReplacementFn, PredicateFn, Actions  } from './index'
+import { Parser, ReplacementFn, PredicateFn, PredicateFailure, Actions } from './index'
 
 // Matcher.actions must be called even if Grammar.actions is not, so this is the
 // no-op argument for that
@@ -93,14 +93,14 @@ export class Grammar implements Parser {
         if (!actions.predicates)
             actions.predicates = {}
         this.actionsCalled = true
-        for (let symbol in this.rules)
+        for (const symbol in this.rules)
             this.rules[symbol].actions(actions as Actions)
     }
 
     match(s: string) {
         if (!this.actionsCalled)
             this.actions(noActions)
-        let src = new Source(s, this.ws)
+        const src = new Source(s, this.ws)
         this.src = src
         let m = this.start!.symbol.match(src)
         let msg = null
@@ -120,25 +120,25 @@ export class Grammar implements Parser {
 
     dump() {
         let s = '(grammar'
-        for (let symbol in this.rules)
+        for (const symbol in this.rules)
             s += this.rules[symbol].dump()
         s += ')'
         return s
     }
 
     check() {
-        let failures = []
+        const failures = []
         let undefCount = 0
         if (!this.start)
             return 'empty grammar'
-        for (let symbol in this.rules) {
-            let rule = this.rules[symbol]
+        for (const symbol in this.rules) {
+            const rule = this.rules[symbol]
             undefCount++
             if (!rule.matcher)
                 failures.push(symbol)
         }
         if (failures.length) {
-            let plural = failures.length > 1
+            const plural = failures.length > 1
             return 'The ' + (plural ?  'symbols ' : 'symbol ') +
                 joinUp(failures, true) +
                 (plural ? ' have no rules ' : ' has no rule ') + 'defined'
@@ -146,10 +146,10 @@ export class Grammar implements Parser {
         let progress = true
         while (undefCount > 0 && progress) {
             progress = false
-            for (let symbol in this.rules) {
-                let rule = this.rules[symbol]
+            for (const symbol in this.rules) {
+                const rule = this.rules[symbol]
                 if (rule.canMatchNothing === MatchesNothing.UNKNOWN) {
-                    let cmn = rule.matcher.canMatchNothing()
+                    const cmn = rule.matcher.canMatchNothing()
                     if (cmn !== MatchesNothing.UNKNOWN) {
                         progress = true
                         rule.canMatchNothing = cmn
@@ -159,35 +159,35 @@ export class Grammar implements Parser {
             }
         }
         if (undefCount > 0) {
-            for (let symbol in this.rules) {
-                let rule = this.rules[symbol]
+            for (const symbol in this.rules) {
+                const rule = this.rules[symbol]
                 if (rule.canMatchNothing === MatchesNothing.UNKNOWN)
                     rule.canMatchNothing = MatchesNothing.YES
             }
         }
-        for (let symbol in this.rules) {
-            let rule = this.rules[symbol]
+        for (const symbol in this.rules) {
+            const rule = this.rules[symbol]
             if (!rule.checked) {
                 rule.checked = true
-                let set: SymbolSet = {}
+                const set: SymbolSet = {}
                 set[symbol] = true
                 rule.matcher.leftReferences(set, failures)
             }
         }
         if (failures.length) {
-            let plural = failures.length > 1
+            const plural = failures.length > 1
             return 'The ' + (plural ? 'rules ' : 'rule ') + 'for ' +
                 joinUp(failures, true) +
                 (plural ? ' contain ' : ' contains ') +
                 'left-recursion which would cause a stack overflow during parsing'
         }
-        for (let symbol in this.rules) {
-            let rule = this.rules[symbol]
+        for (const symbol in this.rules) {
+            const rule = this.rules[symbol]
             if (rule.matcher.hasEmptyRepeat())
                 failures.push(symbol)
         }
         if (failures.length) {
-            let plural = failures.length > 1
+            const plural = failures.length > 1
             return 'The ' +  (plural ? 'rules ' : 'rule ') + 'for ' +
                 joinUp(failures, true) +
                 (plural ? ' contain ' : ' contains ') +
@@ -227,7 +227,7 @@ export class Choice implements Matcher {
     }
 
     actions(actions: Actions) {
-        for (let matcher of this.matchers)
+        for (const matcher of this.matchers)
             matcher.actions(actions)
     }
 
@@ -236,8 +236,8 @@ export class Choice implements Matcher {
     }
 
     match(src: Source) {
-        for (let matcher of this.matchers) {
-            let m = matcher.match(src)
+        for (const matcher of this.matchers) {
+            const m = matcher.match(src)
             if (m !== noMatch)
                 return m
         }
@@ -246,13 +246,13 @@ export class Choice implements Matcher {
 
     dump() {
         let s = ' (choice'
-        for (let matcher of this.matchers)
+        for (const matcher of this.matchers)
             s += matcher.dump()
         return s + ')'
     }
 
     leftReferences(rules: SymbolSet, failures: string[]) {
-        for (let matcher of this.matchers)
+        for (const matcher of this.matchers)
             if (matcher.leftReferences(rules, failures))
                 return true
         return false
@@ -260,7 +260,7 @@ export class Choice implements Matcher {
 
     canMatchNothing() {
         let rv = MatchesNothing.NO
-        for (let matcher of this.matchers) {
+        for (const matcher of this.matchers) {
             switch (matcher.canMatchNothing()) {
             case MatchesNothing.YES:
                 return MatchesNothing.YES
@@ -272,7 +272,7 @@ export class Choice implements Matcher {
     }
 
     hasEmptyRepeat() {
-        for (let matcher of this.matchers)
+        for (const matcher of this.matchers)
             if (matcher.hasEmptyRepeat())
                 return true
         return false
@@ -298,7 +298,7 @@ export class Sequence implements Matcher {
         } else {
             this.fn = defaultReplacementFn
         }
-        for (let item of this.items)
+        for (const item of this.items)
             item.actions(actions)
     }
 
@@ -307,10 +307,10 @@ export class Sequence implements Matcher {
     }
 
     match(src: Source) {
-        let res = []
-        let opos = src.pos
-        for (let item of this.items) {
-            let m = item.matcher.match(src)
+        const res = []
+        const opos = src.pos
+        for (const item of this.items) {
+            const m = item.matcher.match(src)
             if (m == noMatch) {
                 src.pos = opos
                 return noMatch
@@ -323,14 +323,14 @@ export class Sequence implements Matcher {
 
     dump() {
         let s = ' (seq'
-        for (let i of this.items)
+        for (const i of this.items)
             s += i.dump()
         return s + ')'
     }
 
     leftReferences(rules: SymbolSet, failures: string[]) {
-        for (let item of this.items) {
-            let matcher = item.matcher
+        for (const item of this.items) {
+            const matcher = item.matcher
             if (matcher.leftReferences(rules, failures))
                 return true
             if (matcher.canMatchNothing() !== MatchesNothing.YES)
@@ -341,7 +341,7 @@ export class Sequence implements Matcher {
 
     canMatchNothing() : MatchesNothing {
         let rv = MatchesNothing.YES
-        for (let item of this.items) {
+        for (const item of this.items) {
             switch (item.matcher.canMatchNothing()) {
             case MatchesNothing.NO:
                 return MatchesNothing.NO
@@ -353,7 +353,7 @@ export class Sequence implements Matcher {
     }
 
     hasEmptyRepeat() {
-        for (let item of this.items)
+        for (const item of this.items)
             if (item.matcher.hasEmptyRepeat())
                 return true
         return false
@@ -361,7 +361,7 @@ export class Sequence implements Matcher {
 
     private keptItemCount() {
         let count = 0
-        for (let item of this.items) {
+        for (const item of this.items) {
             if (item.keep)
                 count++
         }
@@ -405,8 +405,8 @@ export class Text implements Matcher {
     }
 
     match(src: Source) : any {
-        let pos = src.pos
-        let npos = pos + this.len
+        const pos = src.pos
+        const npos = pos + this.len
         if (src.s.substring(pos, npos) === this.text) {
             src.pos = npos
             if (this.skipWS)
@@ -448,7 +448,7 @@ export class Symbol implements Terminal {
             keepErrors = src.errorCount()
         if (this.rule.skipWS)
             src.skipWS()
-        let m = this.rule.matcher.match(src)
+        const m = this.rule.matcher.match(src)
         if (m === noMatch && this.rule.description)
             src.error(this, keepErrors)
         return m
@@ -471,7 +471,7 @@ export class Symbol implements Terminal {
 
     leftReferences(rules: SymbolSet, failures: string[]) {
         if (rules[this.rule.name]) {
-            for (let symbol in rules)
+            for (const symbol in rules)
                 failures.push(symbol)
             return true
         }
@@ -479,7 +479,7 @@ export class Symbol implements Terminal {
             return false
         this.rule.checked = true
         rules[this.rule.name] = true
-        let result = this.rule.matcher.leftReferences(rules, failures)
+        const result = this.rule.matcher.leftReferences(rules, failures)
         rules[this.rule.name] = false
         return result
     }
@@ -506,9 +506,9 @@ export class Regex implements Terminal {
     }
 
     match(src: Source): any {
-        let pos = src.pos
+        const pos = src.pos
         this.re.lastIndex = pos
-        let m = this.re.exec(src.s)
+        const m = this.re.exec(src.s)
         if (m) {
             src.pos = this.re.lastIndex
             if (this.skipWS)
@@ -553,11 +553,11 @@ export class Repeat implements Matcher {
     }
 
     match(src: Source): any {
-        let matches = []
+        const matches = []
         for (;;) {
             if (src.pos == src.len && (this.zeroOK || matches.length))
                 break
-            let m = this.base.match(src)
+            const m = this.base.match(src)
             if (m === noMatch)
                 break
             matches.push(m)
@@ -606,10 +606,10 @@ export class Predicate implements Matcher {
     }
 
     match(src: Source) {
-        let pos = src.pos
-        let m = this.base.match(src)
+        const pos = src.pos
+        const m = this.base.match(src)
         if (m !== noMatch) {
-            let err = this.fn(m, [])
+            const err = this.fn(m, [])
             if (err) {
                 src.pos = pos
                 src.error(err)
@@ -641,6 +641,10 @@ export class Predicate implements Matcher {
     }
 }
 
+function isPF(o: Object): o is PredicateFailure {
+    return (o as PredicateFailure).message !== undefined
+}
+
 /**
  * Holds the source being parsed and the position currently being examined, as well
  * as the latest rightmost error condition
@@ -648,7 +652,7 @@ export class Predicate implements Matcher {
 export class Source {
     len: number
     pos: number
-    err: (string | Terminal)[]
+    err: (string | PredicateFailure | Terminal)[]
     errPos: number
 
     constructor(public s: string, private ws: RegExp) {
@@ -669,7 +673,7 @@ export class Source {
      * @param what the matcher that failed
      * @param keep how many errors to keep at the current position
      */
-    error(what: Terminal | string, keep : number = -1) {
+    error(what: Terminal | PredicateFailure | string, keep : number = -1) {
         // only record the furthest failures in the source
         if (this.pos >= this.errPos) {
             // throw away earlier failures
@@ -691,12 +695,13 @@ export class Source {
         /* istanbul ignore if */
         if (!this.err)
             return ''
-        let msg
-        let expect : string[] = []
+        const expect : string[] = []
         // collect expectations
-        for (let eitem of this.err) {
+        for (const eitem of this.err) {
             if (typeof eitem === 'string')
                 expect.push(eitem)
+            else if (isPF(eitem))
+                return eitem.message(this.customMessage.bind(this))
             else
                 expect.push(eitem.expectation())
         }
@@ -706,7 +711,7 @@ export class Source {
             if (expect[i] === expect[i + 1])
                 expect.splice(i--, 1)
         // format expectations nicely
-        msg = 'expected ' + joinUp(expect)
+        const msg = 'expected ' + joinUp(expect)
         return errorMessage(msg, this.s, this.errPos)
     }
 
@@ -716,8 +721,8 @@ export class Source {
 }
 
 function joinUp(words : string[], withAnd: boolean = false) {
-    let last = words.pop()
-    let sep = withAnd ? ' and ' : ' or '
+    const last = words.pop()
+    const sep = withAnd ? ' and ' : ' or '
     if (words.length > 1)
         return words.join(', ') + ',' + sep + last // oxford comma FTW
     else if (words.length > 0)

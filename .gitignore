@@ -3,3 +3,5 @@ lib
 coverage
 .vscode
 yarn-error.log
+.yarn
+.yarnrc

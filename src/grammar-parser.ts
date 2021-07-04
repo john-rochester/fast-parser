@@ -101,7 +101,7 @@ function parseItem(l: Lexer, skipWS: boolean, grammar: g.Grammar) {
 }
 
 function parseSequence(l: Lexer, skipWS: boolean, grammar: g.Grammar) {
-    let items = []
+    const items = []
     let item
     while ((item = parseItem(l, skipWS, grammar)) !== null) {
         items.push(item)
@@ -128,11 +128,11 @@ function parseSequence(l: Lexer, skipWS: boolean, grammar: g.Grammar) {
 }
 
 function parseChoice(l: Lexer, skipWS: boolean, grammar: g.Grammar) {
-    let matchers = []
+    const matchers = []
     let matcher
     while ((matcher = parseSequence(l, skipWS, grammar)) !== null) {
         matchers.push(matcher)
-        let t = l.next()
+        const t = l.next()
         if (t.type !== TokenType.CHAR || t.value !== '|') {
             l.pushBack(t)
             if (matchers.length == 1)
@@ -144,12 +144,12 @@ function parseChoice(l: Lexer, skipWS: boolean, grammar: g.Grammar) {
 }
 
 function parseRule(l: Lexer, grammar: g.Grammar) {
-    let name = l.next()
+    const name = l.next()
     if (name.type !== TokenType.SYMBOL) {
         l.error('expected symbol', name)
         return false
     }
-    let rule = grammar.get(name.value)
+    const rule = grammar.get(name.value)
     let t = l.next()
     let desc = null
     if (t.type == TokenType.DESCRIPTION) {
@@ -165,7 +165,7 @@ function parseRule(l: Lexer, grammar: g.Grammar) {
         l.error('expected \'=\'', t)
         return false
     }
-    let matcher = parseChoice(l, skipWS, grammar)
+    const matcher = parseChoice(l, skipWS, grammar)
     if (matcher == null)
         return false
     rule.matcher = matcher
@@ -177,7 +177,7 @@ function parseRule(l: Lexer, grammar: g.Grammar) {
 const defaultWS = /\s+/y
 
 export function parse(s: string) {
-    let l = new Lexer(s)
+    const l = new Lexer(s)
     let ws = defaultWS
     let t = l.next()
     if (t.type === TokenType.SYMBOL && t.value === 'whitespace') {
@@ -191,7 +191,7 @@ export function parse(s: string) {
     } else {
         l.pushBack(t)
     }
-    let grammar = new g.Grammar(ws)
+    const grammar = new g.Grammar(ws)
     if (!l.hasError())
         while (l.peek().type != TokenType.EOF && parseRule(l, grammar))
             ;

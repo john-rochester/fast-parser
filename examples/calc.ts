@@ -6,7 +6,7 @@ import * as ast from './calc-ast'
 
 /* eslint-disable no-useless-escape */
 /* no-useless-escape incorrectly reports the \. in the rule for number */
-let grammar = `
+const grammar = `
 program = pstmt+
 
 pstmt =
@@ -79,13 +79,13 @@ addop <an operator> =
 `
 /* eslint-enable no-useless-escape */
 
-let kw: {[ident: string]: boolean} = {
+const kw: {[ident: string]: boolean} = {
     'define': true, 'end': true, 'if': true, 'then': true, 'else': true,
     'fi': true, 'while': true, 'do': true, 'od': true, 'return': true,
     'and': true, 'or': true
 }
 
-let actions = {
+const actions = {
     predicates: {
         nonkw: (ident: Token): string | null =>
             kw[ident.text] ? 'identifier, found keyword' : null
@@ -93,7 +93,7 @@ let actions = {
     replacements: {
         func:
             (item: any[]) => {
-                let arglist = optionalList(item[2]).map((x: Token) => x.text)
+                const arglist = optionalList(item[2]).map((x: Token) => x.text)
                 return new ast.FunctionDef(item[1].text, arglist, item[3], item[0].pos)
             },
         ifstmt:
@@ -105,7 +105,7 @@ let actions = {
             (item: any[]) => new ast.ReturnStmt(item[0]),
         assignment:
             (item: any[]) => {
-                let identlist = item[0].map((x: Token) => x.text)
+                const identlist = item[0].map((x: Token) => x.text)
                 return new ast.Assignment(identlist, item[1], item[0][0].pos)
             },
         output:
@@ -115,7 +115,7 @@ let actions = {
         binop:
             (item: any[]) => {
                 let lhs = item[0]
-                for (let i of item[1])
+                for (const i of item[1])
                     lhs = new ast.BinaryOp(i[0].text, lhs, i[1])
                 return lhs
             },
@@ -131,7 +131,7 @@ let actions = {
             (item: any[]) => +item[0].text,
         str:
             (item: any[]) => {
-                let s = item[0].text
+                const s = item[0].text
                 return s.substring(1, s.length - 1).replace(/''/g, '\'')
             }
     }
@@ -141,16 +141,16 @@ function optionalList(item: any[]): any[] {
     return item.length ? item[0] : item
 }
 
-let stmts : ast.Statement[] = []
+const stmts : ast.Statement[] = []
 
-let parser = createParser(grammar, actions)
-let src = readFileSync(0, 'utf8')
-let { result, error } = parser.match(src)
+const parser = createParser(grammar, actions)
+const src = readFileSync(0, 'utf8')
+const { result, error } = parser.match(src)
 
 if (error) {
     console.log(error)
 } else {
-    for (let r of result) {
+    for (const r of result) {
         if (r instanceof ast.FunctionDef)
             ast.FunctionDef.store(r)
         else

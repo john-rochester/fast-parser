@@ -1,7 +1,7 @@
 import { parse } from './grammar-parser'
 
 export type ReplacementFn = (args: any[]) => any
-export type PredicateFn = (value: any, prev: any[]) => string | null
+export type PredicateFn = (value: any, prev: any[]) => PredicateFailure | string | null
 
 export interface Actions {
     replacements: {
@@ -10,6 +10,10 @@ export interface Actions {
     predicates: {
         [name: string]: PredicateFn
     }
+}
+
+export interface PredicateFailure {
+    message(formatError: (mesg: string, pos: number) => string): string
 }
 
 export interface MatchResult {
@@ -29,7 +33,7 @@ export interface Parser {
 }
 
 export function createParser(src: string, actions?: Partial<Actions>) : Parser {
-    let res = parse(src)
+    const res = parse(src)
     if (res.error)
         throw new Error(res.error)
     if (actions !== undefined)

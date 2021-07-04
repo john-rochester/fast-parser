@@ -16,8 +16,8 @@ interface Expression {
 }
 
 export function executeBlock(stmts: Statement[], vars: Variables): any {
-    for (let stmt of stmts) {
-        let rv = stmt.execute(vars)
+    for (const stmt of stmts) {
+        const rv = stmt.execute(vars)
         if (rv)
             return rv
     }
@@ -41,7 +41,7 @@ export class FunctionDef {
     }
 
     performCall(args: Expression[], vars: Variables): any {
-        let cvars: Variables = {}
+        const cvars: Variables = {}
         for (let i = 0; i < this.argnames.length; i++)
             cvars[this.argnames[i]] = args[i].evaluate(vars)
         return executeBlock(this.body, cvars)
@@ -66,7 +66,7 @@ export class WhileStmt implements Statement {
 
     execute(vars: Variables) {
         while (this.expr.evaluate(vars)) {
-            let rv = executeBlock(this.body, vars)
+            const rv = executeBlock(this.body, vars)
             if (rv)
                 return rv
         }
@@ -79,7 +79,7 @@ export class ReturnStmt implements Statement {
     }
 
     execute(vars: Variables) {
-        let rv = this.values.map((e) => e.evaluate(vars))
+        const rv = this.values.map((e) => e.evaluate(vars))
         if (rv.length == 1)
             return rv[0]
         return rv
@@ -91,7 +91,7 @@ export class Assignment implements Statement {
     }
 
     execute(vars: Variables) {
-        let value = this.expr.evaluate(vars)
+        const value = this.expr.evaluate(vars)
         if (value instanceof Array) {
             if (this.names.length != value.length)
                 throw new ExecutionError('assigning to ' + this.names.length + ' variables, but have ' + value.length + ' values', this.pos)
@@ -188,7 +188,7 @@ export class FunctionCall implements Expression {
     }
 
     evaluate(vars: Variables) {
-        let f = FunctionDef.table[this.name]
+        const f = FunctionDef.table[this.name]
         if (!f)
             throw new ExecutionError('unknown function', this.pos)
         if (f.argCount() != this.args.length)

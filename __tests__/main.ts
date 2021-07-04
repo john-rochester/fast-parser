@@ -13,7 +13,7 @@ describe('the interface', () => {
 
     it('should throw an exception for an invalid parser', () => {
         expect(() => {
-            let parser = createParser('main = missing')
+            const parser = createParser('main = missing')
             parser.match('a')
         }).toThrow(/The symbol missing has no rule defined/)
     })

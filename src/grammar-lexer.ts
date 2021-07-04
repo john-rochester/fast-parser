@@ -79,7 +79,7 @@ export class Lexer {
      * Return a token without consuming it
      */
     peek() {
-        let t = this.next()
+        const t = this.next()
         this.pushBack(t)
         return t
     }
@@ -107,7 +107,7 @@ export class Lexer {
                     return {
                         type: TokenType.TEXT,
                         value: match[3].replace(/\\./g, function(q: string) {
-                            let c = specials[q[1]]
+                            const c = specials[q[1]]
                             return c ? c : q[1]
                         }),
                         position: pos
